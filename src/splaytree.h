@@ -1,8 +1,9 @@
-//code, concept, pseudocode references:
-//splay function: geeks for geeks: https://www.geeksforgeeks.org/splay-tree-set-1-insert/
-//Prof Aman's trees and balanced trees lecture slides
-//stepik assignments
-//Afnan Syed's Gator AVL (Project1)
+//references:
+//concept of splay function: geeks for geeks: https://www.geeksforgeeks.org/splay-tree-set-1-insert/
+// insert function code: Prof Aman's trees and balanced trees lecture slides
+//code for rotations: stepik assignments
+//code for rotations and deleteNode method: Afnan Syed's Gator AVL (Project1)
+//concept for deletion: Jenny's Lectures https://www.youtube.com/watch?v=ewRSYHStdSA&t=216s
 
 #include <iostream>
 #include <algorithm>
@@ -11,6 +12,7 @@
 
 using namespace std;
 
+//code also used in Afnan Syed's Gator AVL (Project1)
 struct Node{
     string name;
     string work;
@@ -41,6 +43,7 @@ public:
 
     //code reference from Prof. Aman Lecture 4 Balanced Trees Lecture Slides pg. 12
     //code also used for submission on stepik 5.1.1
+    //code also used in Afnan Syed's Gator AVL (Project1)
     Node* rotateLeft(Node *node){
         //your code here
         Node* a = node;  //root node
@@ -55,6 +58,7 @@ public:
 
     //code reference from Prof. Aman Lecture 4 Balanced Trees Lecture Slides pg. 12
     //code also used for submission on stepik 5.1.1
+    //code also used in Afnan Syed's Gator AVL (Project1)
     Node* rotateRight(Node *node){
         //your code here
         Node* c = node;    //root node
@@ -69,6 +73,7 @@ public:
 
     //code reference from Prof. Aman Lecture 4 Balanced Trees Lecture Slides
     //code also used for submission on stepik 5.1.1
+    //code also used in Afnan Syed's Gator AVL (Project1)
     Node* rotateLeftRight(Node *node){
         node->left = rotateLeft(node->left);  //perform left rotation on the root's left node
         Node* p = rotateRight(node);  //perform right rotation on the root
@@ -77,6 +82,7 @@ public:
 
     //code reference from Prof. Aman Lecture 4 Balanced Trees Lecture Slides
     //code also used for submission on stepik 5.1.3
+    //code also used in Afnan Syed's Gator AVL (Project1)
     Node* rotateRightLeft(Node *node){
         node->right = rotateRight(node->right);  //perform right rotation on the root's right node
         Node* p = rotateLeft(node);  //perform left rotation on the root
@@ -95,6 +101,9 @@ public:
         while(root->id != id){
             //given id is greater than the root id, go into the right subtree
             if(id > root->id){
+                if(root->right == nullptr){ //id is not found
+                    return root;
+                }
                 //if given id is greater than the root's right child id, it is right heavy, perform left-left rotation
                 //to bring the grandchild to the root
                 if(id > root->right->id && root->right->right != nullptr){
@@ -113,6 +122,9 @@ public:
 
                 //given id is less than the root id, go into the left subtree
             else if(id < root->id){
+                if(root->left == nullptr){ //id is not found
+                    return root;
+                }
                 //if given id is less than the root's less child id, it is left heavy, perform right-right rotation
                 //to bring the grandchild to the root
                 if(id < root->left->id && root->left->left != nullptr){
@@ -138,11 +150,15 @@ public:
 
     //insert helper function
     //code used from Prof Aman Lecture 3 Trees slides pg 34
+    //code also used in Afnan Syed's Gator AVL (Project1)
     Node* insertNAME(Node* root, string name, int id, string work){
 
         //insert new node
         if (root == nullptr){
             return new Node(name, id, work);
+        }
+        else if(root->id == id){
+            return root;
         }
         //if id is less than the current node id, go in the left subtree
         if (id < root->id){
@@ -159,10 +175,12 @@ public:
     Node* insertNAMEID(Node* root, string name, int id, string work){
         root = insertNAME(root, name, id, work); //insert
         root = splay(root, id); //splay
+
         return root;
     }
 
     //print Left most node (left most leaf node)
+    //code also used in Afnan Syed's Gator AVL (Project1)
     Node* leftMost(Node* root){
         if(root->left == nullptr){ //if the next node is null
             return root; //return current root which is the left most leaf node
@@ -174,72 +192,91 @@ public:
         return root;
     }
 
-    //delete node
+    //remove helper function
     //code from Afnan Syed's Project 1 Gator AVL delete
-    //iterating through the tree to get to id: concept reference : Jenny's lectures CS/IT NET&JRF video:
-    //https://www.youtube.com/watch?v=ewRSYHStdSA
-    Node* deleteNode(Node* root, int id) {
-
-        Node *curr = root;  //create current node tracker
-        Node *prev = nullptr;
-
-        //while not at a wanted node
-        while (curr->id != id) {
-            //if current id is greater than the given id prev
-            prev = curr;
-            if (curr->id < id) {    //go into the right subtree
-                curr = curr->right;
+    //Code reference also using from the Project 1 Overview slides
+    //concept reference for deleting a node in an avl tree:
+    //https://www.youtube.com/watch?v=LXdi_4kSd1o ("5.15 AVL Tree Deletion in Data structures" by Jenny's Lectures)
+    Node* deleteNode(Node* root, int id, int& prevID) {
+        if(root == nullptr){ //if root is null
+            return nullptr; //return null
+        }
+        if (id < root->id){ //if id is less than the root id
+            if(root->left->id == id){
+                prevID = root->id;
             }
-                //if current id is less than the given id
-            else if (curr->id > id) {
-                curr = curr->left;  //go into the left subtree
+            root->left = deleteNode(root->left, id, prevID); //traversal left subtree  (code from Project 1 Overview Slides)
+        }
+        else if (id > root->id){ //if id is greater than the root id
+            if(root->right->id == id){
+                prevID = root->id;
             }
+            root->right = deleteNode(root->right, id, prevID); //traversal right subtree
         }
-        int previd = prev->id;
-
-        //the id matches the current id
-        if (curr->left == nullptr && curr->right == nullptr) { //if the current has no children
-            delete curr; //set current to null
-        }
-        else if (curr->left != nullptr && curr->right == nullptr) { //if current has only left child
-            curr = curr->left; //replace the current with the left child
-        }
-        else if (curr->right != nullptr && curr->left == nullptr) { //if the current has only right child
-            curr = curr->right; //replace the current with the right child
-        }
-        else { //find the inorder successor
-            if (curr->right->left == nullptr) { //if the current's right child has no left child
-                //concept reference for deleting a node in an avl tree:
-                //https://www.youtube.com/watch?v=LXdi_4kSd1o ("5.15 AVL Tree Deletion in Data structures" by Jenny's Lectures)
-                //replace the current root with the current's right child
-                curr->id = curr->right->id;
-                curr->name = curr->right->name;
-                curr->right = curr->right->right;
+        else{ //the id matches the current id
+            if(root->left == nullptr && root->right == nullptr){ //if the root has no children
+                root = nullptr; //set root to null
+                return root;
             }
-            else {
-                Node *nod = leftMost(root->right); //find the left most child of the subtree of the current's right child
-                //concept reference for deleting a node in an avl tree:
-                //https://www.youtube.com/watch?v=LXdi_4kSd1o ("5.15 AVL Tree Deletion in Data structures" by Jenny's Lectures)
-                //reference TA Andrew Penton on Slack
-                //replace the current root with the left most child
-                curr->id = nod->id;
-                curr->name = nod->name;
-                delete nod;
-                nod = nullptr; //assign that left most child as null
+            else if(root->left != nullptr && root->right == nullptr){ //if root has only left child
+                root = root->left; //replace the root with the left child
+                return root;
+            }
+            else if(root->right != nullptr && root->left == nullptr){ //if the root has only right child
+                root = root->right; //replace the root with the right child
+                return root;
+            }
+            else{ //find the inorder successor
+                if(root->right->left == nullptr){ //if the root's right child has no left child
+                    //concept reference for deleting a node in an avl tree:
+                    //https://www.youtube.com/watch?v=LXdi_4kSd1o ("5.15 AVL Tree Deletion in Data structures" by Jenny's Lectures)
+                    //replace the current root with the root's right child
+                    root->id = root->right->id;
+                    root->name = root->right->name;
+                    root->right = root->right->right;
+                    return root;
+                }
+                else{
+                    Node* nod = leftMost(root->right); //find the left most child of the subtree of the root's right child
+                    //concept reference for deleting a node in an avl tree:
+                    //https://www.youtube.com/watch?v=LXdi_4kSd1o ("5.15 AVL Tree Deletion in Data structures" by Jenny's Lectures)
+                    //reference TA Andrew Penton on Slack
+                    //replace the current root with the left most child
+                    root->id = nod->id;
+                    root->name = nod->name;
+                    delete nod;
+                    nod = nullptr; //assign that left most child as null
+                    return root;
+
+                }
 
             }
 
         }
+        return root;
+    }
 
-        root = splay(root, previd);
-
-
+    //remove function
+    //bottom up splaying: delete node first (bst deletion), then splay the parent node
+    //concept reference: (5.21 splay tree deletion Jenny's Lectures) https://www.youtube.com/watch?v=ewRSYHStdSA&t=216s
+    Node* deleteID(Node* root, int id){
+        int prevID; //keep track or previous id
+        root = deleteNode(root, id, prevID); //delete node
+        root = splay(root, prevID);  //splay previous id
         return root;
     }
 
     //search name function, to return the new splayed tree
-    Node* searchName(Node* root, int id) {
+    Node* searchName(Node* root, int id, string& found) {
         Node* newR = splay(root, id);
+        //if id is found
+        if(newR->id == id){
+            found = "sucessful";
+        }
+            //if id is not found
+        else if(newR->id != id){
+            found = "unsucessful";
+        }
         return newR;
     }
 
@@ -260,19 +297,13 @@ public:
 };
 
 
+/*
+ //testing functions through main
 int main() {
+
     SplayTree spl;
 
-
-
-
-
-/*
-   for(int i=0; i<100000; i++){
-       spl.n = spl.insertNAMEID(spl.n, "Greta Gerwig", i, "lady bird");
-   }
-   */
-
+    string found = "";
 
     spl.n = spl.insertNAMEID(spl.n, "Greta Gerwig", 5, "lady bird");
     spl.n = spl.insertNAMEID(spl.n, "Tom Hiddleston", 20, "avengers");
@@ -280,15 +311,13 @@ int main() {
     spl.n = spl.insertNAMEID(spl.n, "Tom Holland", 3, "actor");
     spl.n = spl.insertNAMEID(spl.n, "Johnny Depp", 25, "pirates of the carrabian");
 
-    //   int num = 0;
-    // spl.searchID(spl.n,"Tom Holland", 3);
-    //  cout << num << endl;
-    spl.n = spl.searchName(spl.n,25);
-    //   cout << spl.n->work << endl;
 
-    spl.n = spl.deleteNode(spl.n, 7);
-    spl.printPreorder(spl.n);
-    // cout << spl.n->name << " " << spl.n->id << endl;
+     spl.n = spl.searchName(spl.n,30, found);
+   //   spl.n = spl.deleteID(spl.n, 7);
+   //   spl.printPreorder(spl.n);
+   // cout << spl.n->name << " " << spl.n->id << endl;
 
-    return 0;
-};
+        return 0;
+    };
+
+*/
