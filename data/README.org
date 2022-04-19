@@ -1,0 +1,57 @@
+#+TITLE: Data Cleaning README
+
+Data was sourced from https://datasets.imdbws.com/ in March 2022.
+
+Bash snippet to prepare data for running =clean.R=:
+#+begin_src bash
+# fetch actor data
+wget https://datasets.imdbws.com/name.basics.tsv.gz
+7z x name.basics.tsv.gz
+# rename to avoid overwriting
+mv data.tsv actors.tsv
+
+wget https://datasets.imdbws.com/title.basics.tsv.gz
+7z x title.basics.tsv.gz
+#+end_src
+
+=name.basics= contains a list of roughly 11 million actors.
+
+| Column name        | Description                                                                                                          | Example                                 |
+|--------------------+----------------------------------------------------------------------------------------------------------------------+-----------------------------------------|
+| nconst             | A unique ID for the actor. Primary key. "nm" followed by 7 digits.                                                   | nm0000002                               |
+| primary_name       |                                                                                                                      | Lauren Bacall                           |
+| birth_year         |                                                                                                                      | 1924                                    |
+| death_year         |                                                                                                                      | 2014                                    |
+| primary_profession | A comma separated list of plaintext roles the actor has held                                                         | actress,soundtrack                      |
+| known_for_titles   | A comma separated list of unique IDs referring to titles the actor was involved with. \n Primary key in title.basics | tt0071877,tt0117057,tt0037382,tt0038355 |
+
+
+=title.basics= contains a list of roughly 9 million pieces of media. Only the rows used in this project are described below.
+
+| Column name     | Description                    | Example                      |
+|-----------------+--------------------------------+------------------------------|
+| =tconst=        | Primary key                    | tt0071877                    |
+| =primary_title= | English title of item of media | Murder on the Orient Express |
+| =start_year=    | Year media released            | 1974                         |
+
+These tables were joined and condensed for the project. Source code for data pre-processing can be found in =clean.R=, along with commentary and processing times.
+
+Types of media represented:
+#+begin_src R
+t_df %>%
+  count(title_type) %>%
+  arrange(desc(n))
+##    title_type         n
+##    <chr>          <int>
+##  1 tvEpisode    6630770
+##  2 short         864355
+##  3 movie         606969
+##  4 video         259174
+##  5 tvSeries      223371
+##  6 tvMovie       135691
+##  7 tvMiniSeries   42949
+##  8 tvSpecial      36529
+##  9 videoGame      30866
+## 10 tvShort        10514
+## 11 tvPilot            2
+#+end_src
