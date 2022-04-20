@@ -5,6 +5,7 @@
 //code for rotations and deleteNode method: Afnan Syed's Gator AVL (Project1)
 //concept for deletion: Jenny's Lectures https://www.youtube.com/watch?v=ewRSYHStdSA&t=216s
 
+#pragma once
 #include <iostream>
 #include <algorithm>
 #include <sstream>
@@ -101,6 +102,9 @@ public:
         while(root->id != id ){
             //given id is greater than the root id, go into the right subtree
             if(id > root->id ){
+                if(root->right == nullptr ){ //id is not found
+                    return root;
+                }
                 if(id == root->right->id){
                     root = rotateLeft(root);
                 }
@@ -125,6 +129,9 @@ public:
 
                 //given id is less than the root id, go into the left subtree
             else if(id < root->id) {
+                if(root->left == nullptr){ //id is not found
+                    return root;
+                }
 
                 if(id == root->left->id){
                     root = rotateRight(root);
@@ -182,6 +189,8 @@ public:
     }
 
 
+
+    //helper function for delete ID
     //print largest node is the tree
     void largest(Node* root, int& l){
         if(root == nullptr){ //if tree is empty
@@ -196,6 +205,7 @@ public:
         }
     }
 
+    //helper function for delete ID
     //find and splay node with the largest id
     Node* splayLargest(Node* root){
         int large = 0;
@@ -253,7 +263,7 @@ public:
         if(root == nullptr){ //if tree is empty
         }
         else{
-            cout << root->name << ":    " << root->work << "   " << root->id << endl; //print current node
+            cout << root->name << ": " << root->work << " " << root->id << endl; //print current node
             printPreorder(root->left); //traversal left subtree
             printPreorder(root->right); //traversal right subtree
         }
@@ -262,48 +272,33 @@ public:
 
 };
 
-
-
 /*
-//testing functions through main
+ //testing functions through main
 int main() {
 
     SplayTree spl;
 
     string found = "";
+    string found = "";
+    for(int i = 0; i<10; i++){
+        if(i != 5){
+            spl.n = spl.insertNAMEID(spl.n, "Greta Gerwig", i, "lady bird");
+        }
+    }
 
-    //insert name, id, and work
-    spl.n = spl.insertNAMEID(spl.n, "Christian Bale", 1, "Batman: The Dark Knight Rises");
-    spl.n = spl.insertNAMEID(spl.n, "Greta Gerwig", 2, "Lady Bird");
-    spl.n = spl.insertNAMEID(spl.n, "Cillian Murphy", 3, "Peaky Blinders");
-    spl.n = spl.insertNAMEID(spl.n, "Tom Cruise", 4, "Mission Impossible");
-    spl.n = spl.insertNAMEID(spl.n, "Ann Hathaway", 5, "Inception");
-    spl.n = spl.insertNAMEID(spl.n, "Mads Mikkelsen", 6, "Hannibal");
-
-    //print preorder
-    cout << "Pre order traversal of tree after insertion" << endl;
-    spl.printPreorder(spl.n);
-
-    //search Tom Cruise
-    spl.n = spl.searchName(spl.n,4, found);
-
-    cout << endl << endl;
+    spl.n = spl.insertNAMEID(spl.n, "Greta Gerwig", 5, "lady bird");
+    spl.n = spl.insertNAMEID(spl.n, "Tom Hiddleston", 20, "avengers");
+    spl.n = spl.insertNAMEID(spl.n, "Cillian Murphy", 7, "peaky blinder");
+    spl.n = spl.insertNAMEID(spl.n, "Tom Holland", 3, "actor");
+    spl.n = spl.insertNAMEID(spl.n, "Johnny Depp", 25, "pirates of the carrabian");
 
 
-    cout << "Pre order traversal of tree after search" << endl;
-    //print preorder
-    spl.printPreorder(spl.n);
+     spl.n = spl.searchName(spl.n,30, found);
+   //   spl.n = spl.deleteID(spl.n, 7);
+   //   spl.printPreorder(spl.n);
+   // cout << spl.n->name << " " << spl.n->id << endl;
 
+        return 0;
+    };
 
-    //delete
-    spl.n = spl.deleteID(spl.n,3);
-
-    cout << endl << endl;
-    cout << "Pre order traversal of tree after deletion" << endl;
-    //print preorder
-    spl.printPreorder(spl.n);
-
-
-    return 0;
-};
- */
+*/
