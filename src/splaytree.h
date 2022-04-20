@@ -200,8 +200,8 @@ public:
             if(root->id > l){
                 l = root->id;
             }
-            printPreorder(root->left); //traversal left subtree
-            printPreorder(root->right); //traversal right subtree
+            largest(root->left, l); //traversal left subtree
+            largest(root->right, l); //traversal right subtree
         }
     }
 
