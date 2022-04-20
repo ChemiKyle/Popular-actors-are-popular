@@ -8,6 +8,7 @@ using namespace std;
 
 class HashTable{
     private:
+        int populatedBuckets;
 
         struct Actor{
             int key;
@@ -51,26 +52,26 @@ class HashTable{
 
         //function used to calculate the load size of the table
         double getLoadFactor(){
-            double count = 0;
+            // double count = 0;
 
-            list<Actor*>::iterator it;
-            for(int x = 0; x < total; x++) {
-                //x is the index (hash) of the bucket
-                // load factor determined by filled buckets
-                if (table[x].size() > 0) { count++; }
+            // list<Actor*>::iterator it;
+            // for(int x = 0; x < total; x++) {
+            //     //x is the index (hash) of the bucket
+            //     // load factor determined by filled buckets
+            //     if (table[x].size() > 0) { count++; }
 
-                // load factor determined by items in the HashTable
-                // for(it = table[x].begin(); it != table[x].end(); ++it){
-                //     Actor* temp = *it;
-                //     //check to see if the bucket is filled or empty by seeing if there is an actor object in the bucket or if it is NULL
-                //     if(temp != NULL){
-                //         count++;
-                //     }
-                // }
+            //     // load factor determined by items in the HashTable
+            //     // for(it = table[x].begin(); it != table[x].end(); ++it){
+            //     //     Actor* temp = *it;
+            //     //     //check to see if the bucket is filled or empty by seeing if there is an actor object in the bucket or if it is NULL
+            //     //     if(temp != NULL){
+            //     //         count++;
+            //     //     }
+            //     // }
 
-            }
+            // }
             //load factor is calculated by dividing the total number of buckets filled by the total number of buckets
-            loadFactor = count / total;
+            loadFactor = populatedBuckets / total;
             return loadFactor;
         }
 
@@ -80,6 +81,7 @@ class HashTable{
 
           list<Actor *> *newTable;
           newTable = new list<Actor *>[total];
+          populatedBuckets = 0;
 
           // list<Actor *>::iterator it;
           for (int x = 0; x < oldTotal; x++) {
@@ -89,6 +91,9 @@ class HashTable{
             for (auto actor : table[x]) {
               Actor *temp = actor;
               int index = getHash(temp->key);
+
+              if(newTable[index].size() == 0) { populatedBuckets++; } // increment populatedBuckets if populating an empty bucket
+
               newTable[index].push_back(temp);
             }
           }
@@ -102,6 +107,7 @@ class HashTable{
             actor->key = Key;
             actor->name = Name;
             actor->movieList = mList;
+            if (table[getHash(Key)].size() == 0) { populatedBuckets++; } // increment populatedBuckets if populating an empty bucket
             //we push back the actor to the key index we get when we call the hash function of their key
             table[getHash(Key)].push_back(actor);
 
@@ -187,7 +193,8 @@ class HashTable{
         }
 };
 
-/*int main(){
+/*
+int main(){
     //HashTable ht;
     HashTable ht(3);
     
@@ -209,8 +216,8 @@ class HashTable{
     
     //cout << ht.getTotal() << endl;
     //cout << ht.getLoadFactor() << endl;
-    /*ht.resize();
-    cout << ht.getTotal() << endl;*/
+    ht.resize();
+    cout << ht.getTotal() << endl;
     //ht.printAll();
     //cout << endl << ht.getLoadFactor() << endl;
     //int total = ht.actorTotal / ht2.loadFactor;
@@ -222,4 +229,5 @@ class HashTable{
     ht.insert(0, "Larry Lobster", "SpongeBob");
     ht.printAll();
     return 0;    
-}*/
+}
+*/
