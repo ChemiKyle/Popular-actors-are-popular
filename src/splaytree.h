@@ -5,7 +5,6 @@
 //code for rotations and deleteNode method: Afnan Syed's Gator AVL (Project1)
 //concept for deletion: Jenny's Lectures https://www.youtube.com/watch?v=ewRSYHStdSA&t=216s
 
-#pragma once
 #include <iostream>
 #include <algorithm>
 #include <sstream>
@@ -102,9 +101,6 @@ public:
         while(root->id != id ){
             //given id is greater than the root id, go into the right subtree
             if(id > root->id ){
-                if(root->right == nullptr ){ //id is not found
-                    return root;
-                }
                 if(id == root->right->id){
                     root = rotateLeft(root);
                 }
@@ -129,9 +125,6 @@ public:
 
                 //given id is less than the root id, go into the left subtree
             else if(id < root->id) {
-                if(root->left == nullptr){ //id is not found
-                    return root;
-                }
 
                 if(id == root->left->id){
                     root = rotateRight(root);
@@ -189,91 +182,54 @@ public:
     }
 
 
-    //print Left most node (left most leaf node)
-    //code also used in Afnan Syed's Gator AVL (Project1)
-    Node* leftMost(Node* root){
-        if(root->left == nullptr){ //if the next node is null
-            return root; //return current root which is the left most leaf node
+    //print largest node is the tree
+    void largest(Node* root, int& l){
+        if(root == nullptr){ //if tree is empty
         }
         else{
-            leftMost(root->left); //traversal through the left nodes
+            //if current id is greater than the previous largest
+            if(root->id > l){
+                l = root->id;
+            }
+            printPreorder(root->left); //traversal left subtree
+            printPreorder(root->right); //traversal right subtree
         }
-
-        return root;
     }
 
-    //remove helper function
-    //code from Afnan Syed's Project 1 Gator AVL delete
-    //Code reference also using from the Project 1 Overview slides
-    //concept reference for deleting a node in an avl tree:
-    //https://www.youtube.com/watch?v=LXdi_4kSd1o ("5.15 AVL Tree Deletion in Data structures" by Jenny's Lectures)
-    Node* deleteNode(Node* root, int id, int& prevID) {
-        if(root == nullptr){ //if root is null
-            return nullptr; //return null
-        }
-        if (id < root->id){ //if id is less than the root id
-            if(root->left->id == id){
-                prevID = root->id;
-            }
-            root->left = deleteNode(root->left, id, prevID); //traversal left subtree  (code from Project 1 Overview Slides)
-        }
-        else if (id > root->id){ //if id is greater than the root id
-            if(root->right->id == id){
-                prevID = root->id;
-            }
-            root->right = deleteNode(root->right, id, prevID); //traversal right subtree
-        }
-        else{ //the id matches the current id
-            if(root->left == nullptr && root->right == nullptr){ //if the root has no children
-                root = nullptr; //set root to null
-                return root;
-            }
-            else if(root->left != nullptr && root->right == nullptr){ //if root has only left child
-                root = root->left; //replace the root with the left child
-                return root;
-            }
-            else if(root->right != nullptr && root->left == nullptr){ //if the root has only right child
-                root = root->right; //replace the root with the right child
-                return root;
-            }
-            else{ //find the inorder successor
-                if(root->right->left == nullptr){ //if the root's right child has no left child
-                    //concept reference for deleting a node in an avl tree:
-                    //https://www.youtube.com/watch?v=LXdi_4kSd1o ("5.15 AVL Tree Deletion in Data structures" by Jenny's Lectures)
-                    //replace the current root with the root's right child
-                    root->id = root->right->id;
-                    root->name = root->right->name;
-                    root->right = root->right->right;
-                    return root;
-                }
-                else{
-                    Node* nod = leftMost(root->right); //find the left most child of the subtree of the root's right child
-                    //concept reference for deleting a node in an avl tree:
-                    //https://www.youtube.com/watch?v=LXdi_4kSd1o ("5.15 AVL Tree Deletion in Data structures" by Jenny's Lectures)
-                    //reference TA Andrew Penton on Slack
-                    //replace the current root with the left most child
-                    root->id = nod->id;
-                    root->name = nod->name;
-                    delete nod;
-                    nod = nullptr; //assign that left most child as null
-                    return root;
+    //find and splay node with the largest id
+    Node* splayLargest(Node* root){
+        int large = 0;
+        largest(root, large);  //find largest id
+        root = splay(root, large);  //splay largest id
 
-                }
-
-            }
-
-        }
         return root;
     }
 
     //remove function
-    //bottom up splaying: delete node first (bst deletion), then splay the parent node
+    //bottom up splaying: splay node, then
     //concept reference: (5.21 splay tree deletion Jenny's Lectures) https://www.youtube.com/watch?v=ewRSYHStdSA&t=216s
     Node* deleteID(Node* root, int id){
-        int prevID; //keep track or previous id
-        root = deleteNode(root, id, prevID); //delete node
-        root = splay(root, prevID);  //splay previous id
-        return root;
+        root = splay(root, id);  //splay id
+        if(root->left == nullptr && root->right == nullptr){ //if the root has no children
+            root = nullptr; //set root to null
+            return root;
+        }
+        else if(root->left != nullptr && root->right == nullptr){ //if root has only left child
+            root = root->left; //replace the root with the left child
+            return root;
+        }
+        else if(root->right != nullptr && root->left == nullptr){ //if the root has only right child
+            root = root->right; //replace the root with the right child
+            return root;
+        }
+        else{
+            Node* r = root->right;  //root's right child
+            Node* b = splayLargest(root->left);    //largest node in the left subtree is now root's left child
+            Node* y = b->right;    //root's predecessor
+            b->right = r;    //assign child's right as root
+            r->left = y;    //assign root's left as the predecessor
+            return b;
+        }
     }
 
     //search name function, to return the new splayed tree
@@ -297,7 +253,7 @@ public:
         if(root == nullptr){ //if tree is empty
         }
         else{
-            cout << root->name << ": " << root->work << " " << root->id << endl; //print current node
+            cout << root->name << ":    " << root->work << "   " << root->id << endl; //print current node
             printPreorder(root->left); //traversal left subtree
             printPreorder(root->right); //traversal right subtree
         }
@@ -306,33 +262,48 @@ public:
 
 };
 
+
+
 /*
- //testing functions through main
+//testing functions through main
 int main() {
 
     SplayTree spl;
 
     string found = "";
-    string found = "";
-    for(int i = 0; i<10; i++){
-        if(i != 5){
-            spl.n = spl.insertNAMEID(spl.n, "Greta Gerwig", i, "lady bird");
-        }
-    }
 
-    spl.n = spl.insertNAMEID(spl.n, "Greta Gerwig", 5, "lady bird");
-    spl.n = spl.insertNAMEID(spl.n, "Tom Hiddleston", 20, "avengers");
-    spl.n = spl.insertNAMEID(spl.n, "Cillian Murphy", 7, "peaky blinder");
-    spl.n = spl.insertNAMEID(spl.n, "Tom Holland", 3, "actor");
-    spl.n = spl.insertNAMEID(spl.n, "Johnny Depp", 25, "pirates of the carrabian");
+    //insert name, id, and work
+    spl.n = spl.insertNAMEID(spl.n, "Christian Bale", 1, "Batman: The Dark Knight Rises");
+    spl.n = spl.insertNAMEID(spl.n, "Greta Gerwig", 2, "Lady Bird");
+    spl.n = spl.insertNAMEID(spl.n, "Cillian Murphy", 3, "Peaky Blinders");
+    spl.n = spl.insertNAMEID(spl.n, "Tom Cruise", 4, "Mission Impossible");
+    spl.n = spl.insertNAMEID(spl.n, "Ann Hathaway", 5, "Inception");
+    spl.n = spl.insertNAMEID(spl.n, "Mads Mikkelsen", 6, "Hannibal");
+
+    //print preorder
+    cout << "Pre order traversal of tree after insertion" << endl;
+    spl.printPreorder(spl.n);
+
+    //search Tom Cruise
+    spl.n = spl.searchName(spl.n,4, found);
+
+    cout << endl << endl;
 
 
-     spl.n = spl.searchName(spl.n,30, found);
-   //   spl.n = spl.deleteID(spl.n, 7);
-   //   spl.printPreorder(spl.n);
-   // cout << spl.n->name << " " << spl.n->id << endl;
+    cout << "Pre order traversal of tree after search" << endl;
+    //print preorder
+    spl.printPreorder(spl.n);
 
-        return 0;
-    };
 
-*/
+    //delete
+    spl.n = spl.deleteID(spl.n,3);
+
+    cout << endl << endl;
+    cout << "Pre order traversal of tree after deletion" << endl;
+    //print preorder
+    spl.printPreorder(spl.n);
+
+
+    return 0;
+};
+ */
