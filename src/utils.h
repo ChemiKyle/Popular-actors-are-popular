@@ -50,7 +50,7 @@ void readFile(string file_name,
 
     // remove first 2 chars of ID
     // TODO: detect if first 2 chars are present before doing this
-    unsigned int uid = stoi( cmd_vec[0].substr(2, cmd_vec[0].size() - 1) );
+    unsigned int uid = stoi( id.substr(2, id.size() - 1) );
 
     // insert into data structures
     // TODO: record time taken to build each structure independently
