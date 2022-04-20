@@ -71,7 +71,7 @@ class HashTable{
 
             // }
             //load factor is calculated by dividing the total number of buckets filled by the total number of buckets
-            loadFactor = populatedBuckets / total;
+            loadFactor = (double) populatedBuckets / total;
             return loadFactor;
         }
 
