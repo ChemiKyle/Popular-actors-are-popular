@@ -5,6 +5,7 @@
 //code for rotations and deleteNode method: Afnan Syed's Gator AVL (Project1)
 //concept for deletion: Jenny's Lectures https://www.youtube.com/watch?v=ewRSYHStdSA&t=216s
 
+#pragma once
 #include <iostream>
 #include <algorithm>
 #include <sstream>
@@ -21,8 +22,8 @@ struct Node{
     Node* right;
 
     Node(){
-        name = " ";
-        work = " ";
+        name = "";
+        work = "";
         id = 0;
         left = nullptr;
         right = nullptr;
@@ -98,48 +99,62 @@ public:
             return root;
         }
         //while root id is not the given id
-        while(root->id != id){
+        while(root->id != id ){
             //given id is greater than the root id, go into the right subtree
-            if(id > root->id){
-                if(root->right == nullptr){ //id is not found
+            if(id > root->id ){
+                if(root->right == nullptr ){ //id is not found
                     return root;
                 }
-                //if given id is greater than the root's right child id, it is right heavy, perform left-left rotation
-                //to bring the grandchild to the root
-                if(id > root->right->id && root->right->right != nullptr){
+                if(id == root->right->id){
+                    root = rotateLeft(root);
+                }
+                    //if given id is greater than the root's right child id, it is right heavy, perform left-left rotation
+                    //to bring the grandchild to the root
+                else if(id > root->right->id && root->right->right != nullptr){
                     root = rotateLeft(root);
                     root = rotateLeft(root);
                 }
                     //if given id is less than the root's right child, right-left rotation
-                else if(id < root->right->id && root->right->left != nullptr){
+                else if(id < root->right->id && root->right->left != nullptr ){
                     root = rotateRightLeft(root);
                 }
                     //if the root does not have any grandchildren from the right subtree, do only left rotation
-                else{
+                else if(root->right != nullptr && root->right->right == nullptr && root->right->left == nullptr){
                     root = rotateLeft(root);
+                }
+                else{
+                    return root;
                 }
             }
 
                 //given id is less than the root id, go into the left subtree
-            else if(id < root->id){
+            else if(id < root->id) {
                 if(root->left == nullptr){ //id is not found
                     return root;
                 }
-                //if given id is less than the root's less child id, it is left heavy, perform right-right rotation
-                //to bring the grandchild to the root
-                if(id < root->left->id && root->left->left != nullptr){
+
+                if(id == root->left->id){
+                    root = rotateRight(root);
+                }
+                    //if given id is less than the root's less child id, it is left heavy, perform right-right rotation
+                    //to bring the grandchild to the root
+                else if (id < root->left->id && root->left->left != nullptr) {
                     root = rotateRight(root);
                     root = rotateRight(root);
                 }
                     //if given id is greater than the root's left child, left-right rotation
-                else if(id > root->left->id && root->left->right != nullptr){
+                else if (id > root->left->id && root->left->right != nullptr) {
                     root = rotateLeftRight(root);
                 }
                     //if the root does not have any grandchildren from the left subtree, do only right rotation
-                else{
+                else if (root->left != nullptr && root->left->right == nullptr && root->left->left == nullptr) {
                     root = rotateRight(root);
                 }
+                else{
+                    return root;
+                }
             }
+
         }
 
         //return root of the tree
@@ -149,35 +164,30 @@ public:
 
 
     //insert helper function
-    //code used from Prof Aman Lecture 3 Trees slides pg 34
-    //code also used in Afnan Syed's Gator AVL (Project1)
-    Node* insertNAME(Node* root, string name, int id, string work){
+    //concept used from Prof Aman Lecture 3 Trees slides pg 34
+    Node* insertNAMEID(Node* root, string name, int id, string work){
 
-        //insert new node
-        if (root == nullptr){
-            return new Node(name, id, work);
+        //create new node
+        Node* newNode = new Node(name, id, work);
+
+        //if root is empty
+        if(root == nullptr){
+            return newNode;
         }
+            //graft the rest of the tree as either the right or left child
         else if(root->id == id){
             return root;
         }
-        //if id is less than the current node id, go in the left subtree
-        if (id < root->id){
-            root->left = insertNAME(root->left, name, id, work);
+        else if(id > root->id){
+            newNode->left = root;
         }
-            //if id is greater than the current node id, go in the right subtree
-        else{
-            root->right = insertNAME(root->right, name, id, work);
+        else if(id < root->id){
+            newNode->right = root;
         }
-        return root; //return root
+
+        return newNode; //return root
     }
 
-    //insert function
-    Node* insertNAMEID(Node* root, string name, int id, string work){
-        root = insertNAME(root, name, id, work); //insert
-        root = splay(root, id); //splay
-
-        return root;
-    }
 
     //print Left most node (left most leaf node)
     //code also used in Afnan Syed's Gator AVL (Project1)
@@ -296,7 +306,6 @@ public:
 
 };
 
-
 /*
  //testing functions through main
 int main() {
@@ -304,6 +313,12 @@ int main() {
     SplayTree spl;
 
     string found = "";
+    string found = "";
+    for(int i = 0; i<10; i++){
+        if(i != 5){
+            spl.n = spl.insertNAMEID(spl.n, "Greta Gerwig", i, "lady bird");
+        }
+    }
 
     spl.n = spl.insertNAMEID(spl.n, "Greta Gerwig", 5, "lady bird");
     spl.n = spl.insertNAMEID(spl.n, "Tom Hiddleston", 20, "avengers");
