@@ -75,16 +75,16 @@ vector<string> parseInputLine(string raw_input) {
   return cmd_vec;
 }
 
-// function expected to be called in main
+// Adapted from Kyle Chesney's project 1 submission
 // runs an infinite loop accepting input until an exit phrase is passed ("exit")
 void acceptInput(
-  HashTable ht,
-  SplayTree st
+  HashTable& ht,
+  SplayTree& st
 ) {
   // flush input to keep first cmd from being an empty string
   // adapted from: https://stackoverflow.com/a/257098/7418735
   cin.clear();
-  cin.ignore(1,'\n');
+  // cin.ignore(1,'\n'); // this snips off the first char of the first input
 
   string cmd;
   string raw_input;
@@ -93,15 +93,26 @@ void acceptInput(
   // phrase used to end this loop
   static const string exit_cond = "exit";
 
+  // get input from user, assume it's an integer (actor ID) with leading chars
+  // search both data structures for the ID, report time taken by each to find item
   while (1) {
     getline(cin, raw_input);
     cmd_vec = parseInputLine(raw_input);
-
     if (cmd_vec[0].compare("exit") == 0) { break; }
 
-    // remove first 2 chars
-    // TODO: detect if first 2 chars are present before doing this
-    unsigned int id = stoi( cmd_vec[0].substr(2, cmd_vec[0].size() - 1) );
+    string input = cmd_vec[0];
+    unsigned int id;
+
+    // extract numeric components from string input
+    // https://stackoverflow.com/a/32586306/7418735
+    // atoi requires first char to be a digit
+    size_t i = 0;
+    for ( ; i < input.length(); i++ ){ if ( isdigit(input[i]) ) break; }
+
+    // assume string ends in digit
+    input = input.substr(i, input.length() - 1 );
+
+    id = atoi(input.c_str());
 
     // Hash Table//////////////////////////////////////////////////////////////////
     auto start = chrono::high_resolution_clock::now();
