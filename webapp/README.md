@@ -8,7 +8,9 @@ Install python dependencies via `pip`:
 pip install -r requirements.txt
 ```
 
-Download the necessary datasets to the `data` directory and run `clean.R`. See the [data README][../data/README.org] for more information.
+## Prerequisites
+
+Download the necessary datasets to the `data` directory and run `clean.R`. See the [data README](../data/README.org) for more information on data acquisition and pre-processing.
 
 Compile the C++ application in `src` with:
 
@@ -16,7 +18,16 @@ Compile the C++ application in `src` with:
 g++ -std=c++11 main.cpp
 ```
 
+See the [CLI README](../src/README.md) for more information on compilation.
 
 # Running
-You can spin up with `python3 app.py`.  
-Once the application is running, point your favorite web browser at [localhost:5000](locahost:5000)
+
+Note: the web interface is not fully functional on [Windows machines](https://github.com/ChemiKyle/Popular-actors-are-popular/issues/6), but does work on MacOS and Linux.
+
+Once you have processed data and compiled the CLI API, you can spin up the flask app with:
+
+```sh
+python3 app.py
+```
+
+Once the application is running, point your favorite web browser at [localhost:5000](http://localhost:5000)
