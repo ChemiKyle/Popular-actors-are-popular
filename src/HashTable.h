@@ -17,6 +17,7 @@ class HashTable{
         };
 
         list<Actor*> *table;
+        
         int total;
 
         const int actorTotal = 11456063;
@@ -52,24 +53,6 @@ class HashTable{
 
         //function used to calculate the load size of the table
         double getLoadFactor(){
-            // double count = 0;
-
-            // list<Actor*>::iterator it;
-            // for(int x = 0; x < total; x++) {
-            //     //x is the index (hash) of the bucket
-            //     // load factor determined by filled buckets
-            //     if (table[x].size() > 0) { count++; }
-
-            //     // load factor determined by items in the HashTable
-            //     // for(it = table[x].begin(); it != table[x].end(); ++it){
-            //     //     Actor* temp = *it;
-            //     //     //check to see if the bucket is filled or empty by seeing if there is an actor object in the bucket or if it is NULL
-            //     //     if(temp != NULL){
-            //     //         count++;
-            //     //     }
-            //     // }
-
-            // }
             //load factor is calculated by dividing the total number of buckets filled by the total number of buckets
             loadFactor = (double) populatedBuckets / total;
             return loadFactor;
@@ -83,10 +66,7 @@ class HashTable{
           newTable = new list<Actor *>[total];
           populatedBuckets = 0;
 
-          // list<Actor *>::iterator it;
           for (int x = 0; x < oldTotal; x++) {
-            // iterator causes a segfault
-            // for (it = table[x].begin(); it != table[x].end(); ++it) {
             if (table[x].size() == 0) { continue; } // don't attempt to move empty cells
             for (auto actor : table[x]) {
               Actor *temp = actor;
@@ -145,14 +125,12 @@ class HashTable{
                 //checks to see if the name attatched to the temp actor is the name we are looking for
                 Actor* temp = *it;
                 if(temp->name == Name){
-                    break;
+                    //if the temp actors name matches, we return true
+                    return true;
                 }
             }
 
             //if the temp actors name matches, we return true
-            if(it != table[x].end()){
-                return true;
-            }
 
             //if the loop is never broken, we did not find the actor, so we return false
             return false;
@@ -168,12 +146,8 @@ class HashTable{
                 Actor* temp = *it;
                 //instead of checking for actor names we are now comparing actor keys
                 if(temp->key == Key){
-                    break;
+                    return true;
                 }
-            }
-
-            if(it != table[x].end()){
-                return true;
             }
 
             return false;
@@ -193,41 +167,3 @@ class HashTable{
         }
 };
 
-/*
-int main(){
-    //HashTable ht;
-    HashTable ht(3);
-    
-    ht.insert(1, "Harry Potter" , "Sorcerers Stone");
-    ht.insert(1, "Larry King", "Late Night");
-    ht.insert(0, "Larry Lobster", "SpongeBob");
-    
-    //ht.printAll();
-    //cout << endl << ht.getLoadFactor() << endl;
-    //cout << ht.findA(1, "Larry King") << endl;
-    
-    //ht.removeA(1, "Larry King");
-    cout << ht.findA(0);
-    
-    //ht.printAll();
-    
-    //cout << ht.findA(1, "Harry Potter") << endl;
-    //cout << ht.findA(1, "Larry King") << endl;
-    
-    //cout << ht.getTotal() << endl;
-    //cout << ht.getLoadFactor() << endl;
-    ht.resize();
-    cout << ht.getTotal() << endl;
-    //ht.printAll();
-    //cout << endl << ht.getLoadFactor() << endl;
-    //int total = ht.actorTotal / ht2.loadFactor;
-    //cout << total;
-    
-    /*HashTable ht(total);
-    ht.insert(1, "Harry Potter" , "Sorcerers Stone");
-    ht.insert(1, "Larry King", "Late Night");
-    ht.insert(0, "Larry Lobster", "SpongeBob");
-    ht.printAll();
-    return 0;    
-}
-*/
