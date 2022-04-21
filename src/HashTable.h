@@ -35,7 +35,7 @@ class HashTable{
         //base constructor of HashTable, used for known amount of items
         HashTable(){
             //setting the total number of buckets within the table to be just under the threshold required for a resize
-            total = (actorTotal / threshold) + 1;
+            total = ((double) actorTotal / threshold) + 1;
             table = new list<Actor*>[total];
         }
 
@@ -167,3 +167,4 @@ class HashTable{
         }
 };
 
+//Basic structure implementation inspired by: https://www.educative.io/edpresso/how-to-implement-a-hash-table-in-cpp
