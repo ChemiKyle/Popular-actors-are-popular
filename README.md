@@ -9,4 +9,6 @@ Class Project for COP 3530 (Data Structures and Algorithms) - Spring 2022
 
 </center>
 
-Instructions for obtaining data are in the `data` directory, instructions for building this project on your machine are located in the `src` directory.
+[Instructions](/data/README.org) for obtaining and cleaning data are in the [`./data`](/data) directory.  
+[Instructions](/src/README.md) for compiling and using the CLI API in the [`./src`](/src) directory.  
+[Instructions](/webapp/README.md) for building and launching the web interface are located in the [`./webapp`](/webapp) directory.
